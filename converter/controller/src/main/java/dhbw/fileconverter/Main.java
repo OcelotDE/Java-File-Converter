@@ -1,66 +1,94 @@
 package dhbw.fileconverter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("File converter initialized...");
 
-        // load modules
-        Map<String, IConverter> modules = null;
+        // load converter and formatter modules
+        Map<String, IConverter> converters = null;
+        Map<String, IFormatter> formatters = null;
         try {
-            modules = ModuleUtil.loadModules(IConverter.class);
+            converters = ModuleUtil.loadModules(IConverter.class);
+            formatters = ModuleUtil.loadModules(IFormatter.class);
         } catch (ModuleLoadException e) {
             System.out.println(e.getMessage());
         }
 
         // parse arguments and get the modules
-        ArrayList<IConverter> converterPipe = null;
+        List<ProcessStep> processPipe = null;
         try {
-            converterPipe = ArgumentUtil.parseArguments(args, modules);
+            processPipe = ArgumentUtil.parseArguments(args, converters, formatters);
         } catch (ArgumentException e) {
             System.out.println(e.getMessage());
         }
 
-        Object pipeItem;
+        JsonNode pipeItem;
         String fileDescriptor = args[0];
         String fileEndingFormat = fileDescriptor.split("\\.")[1];
         String fileName = fileDescriptor.split("\\.")[0];
 
         // handle the first module in the pipe
         try {
-            pipeItem = modules.get(fileEndingFormat).from(FileManager.getFile(fileDescriptor));
+            pipeItem = converters.get(fileEndingFormat).from(FileManager.getFile(fileDescriptor), null);
         } catch (ProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        // handle the rest of the modules in the pipe
-        for (IConverter filter : converterPipe) {
-            try {
-                String formatString = filter.to(pipeItem);
-                pipeItem = filter.from(formatString);
-            } catch (ProcessingException e) {
-                System.out.println(e.getMessage());
+        int lastModuleIndex = processPipe.size() - 1;
+        ProcessStep lastStep = processPipe.get(lastModuleIndex);
+        if (!(lastStep.getModule() instanceof IConverter lastConverter)) {
+            throw new RuntimeException("Last module in pipe must be a converter.");
+        }
+        processPipe.remove(lastModuleIndex);
+
+        // create an iterator for converterPipe
+        for (ProcessStep step : processPipe) {
+            IModule<?> module = step.getModule();
+            if (module instanceof IConverter converter) {
+                try {
+                    String formatString = converter.to(pipeItem, step.getParameters());
+
+                    pipeItem = converter.from(formatString, step.getParameters());
+
+                } catch (ProcessingException e) {
+                    System.out.println(e.getMessage());
+                    return;
+                }
+            } else if (module instanceof IFormatter formatter) {
+                try {
+                    JsonNode format = formatter.to(pipeItem, step.getParameters());
+
+                    pipeItem = formatter.from(format, step.getParameters());
+
+                } catch (ProcessingException e) {
+                    System.out.println(e.getMessage());
+                    return;
+                }
             }
         }
 
-        // get the file type of the last module in the pipe
-        IConverter lastModule = converterPipe.get(converterPipe.size() - 1);
         String lastFileType;
-        ModuleName annotation = lastModule.getClass().getAnnotation(ModuleName.class);
+        FileEnding annotation = lastConverter.getClass().getAnnotation(FileEnding.class);
         if (annotation != null) { // if the module has a ModuleName annotation, use that as the file type
             lastFileType = annotation.value().toLowerCase();
         } else { // otherwise, use the class name
-            lastFileType = lastModule.getClass().getSimpleName().toLowerCase();
+            lastFileType = lastConverter.getClass().getSimpleName().toLowerCase();
         }
 
         // convert pipe item to string
         String pipeItemString = null;
         try {
-            pipeItemString = lastModule.to(pipeItem);
+            pipeItemString = lastConverter.to(pipeItem, lastStep.getParameters());
         } catch (ProcessingException e) {
             System.out.println(e.getMessage());
+            return;
         }
 
         FileManager.writeFile(fileName, lastFileType, pipeItemString); // write the file

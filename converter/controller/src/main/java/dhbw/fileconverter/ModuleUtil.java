@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -16,7 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ModuleUtil {
-    private ModuleUtil() {}
+    private ModuleUtil() {
+    }
 
     public static <T> Map<String, T> loadModules(Class<T> moduleType) throws ModuleLoadException {
         URLClassLoader classLoader = loadJars();
@@ -24,21 +26,22 @@ public final class ModuleUtil {
         Reflections ref = new Reflections(config);
         Set<Class<? extends T>> moduleClasses = ref.getSubTypesOf(moduleType);
 
-        return moduleClasses.stream().collect(Collectors.toMap((module) -> {
-            ModuleName annotation = module.getAnnotation(ModuleName.class);
-            if (annotation != null) {
-                return annotation.value().toLowerCase();
-            }
-            return module.getSimpleName().toLowerCase();
-        }, module -> {
-            try {
-                Constructor<? extends T> constructor = module.getConstructor();
-                return constructor.newInstance();
-            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                     InvocationTargetException e) {
-                throw new ModuleLoadException("Could not instantiate module: " + module.getSimpleName(), e);
-            }
-        }));
+        return moduleClasses.stream().filter(module -> !Modifier.isAbstract(module.getModifiers()))
+                .collect(Collectors.toMap((module) -> {
+                    ModuleName annotation = module.getAnnotation(ModuleName.class);
+                    if (annotation != null) {
+                        return annotation.value().toLowerCase();
+                    }
+                    return module.getSimpleName().toLowerCase();
+                }, module -> {
+                    try {
+                        Constructor<? extends T> constructor = module.getConstructor();
+                        return constructor.newInstance();
+                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                             InvocationTargetException e) {
+                        throw new ModuleLoadException("Could not instantiate module: " + module.getSimpleName(), e);
+                    }
+                }));
     }
 
     private static URLClassLoader loadJars() {

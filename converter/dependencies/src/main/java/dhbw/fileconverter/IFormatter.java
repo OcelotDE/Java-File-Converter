@@ -1,7 +1,6 @@
 package dhbw.fileconverter;
 
-public interface IFormatter {
-    Object encrypt(Object input);
+import com.fasterxml.jackson.databind.JsonNode;
 
-    Object decrypt(Object input);
+public interface IFormatter extends IModule<JsonNode> {
 }
