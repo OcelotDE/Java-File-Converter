@@ -28,9 +28,9 @@ public final class ModuleUtil {
         return moduleClasses.stream().collect(Collectors.toMap((module) -> {
             ModuleName annotation = module.getAnnotation(ModuleName.class);
             if (annotation != null) {
-                return annotation.value();
+                return annotation.value().toLowerCase();
             }
-            return module.getSimpleName();
+            return module.getSimpleName().toLowerCase();
         }, module -> {
             try {
                 Constructor<? extends T> constructor = module.getConstructor();
@@ -61,8 +61,6 @@ public final class ModuleUtil {
                 throw new ModuleLoadException("Could not read module file: " + file.getName(), e);
             }
         }).toArray(URL[]::new);
-
-        System.out.println(urls[0]);
 
         try {
             return new URLClassLoader(urls, ModuleUtil.class.getClassLoader());

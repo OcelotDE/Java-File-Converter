@@ -19,6 +19,7 @@
         <module>controller</module>
         <module>dependencies</module>
         <module>json</module>
+        <module>XML</module>
     </modules>
 
 </project>
