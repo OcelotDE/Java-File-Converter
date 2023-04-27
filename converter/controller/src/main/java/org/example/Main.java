@@ -2,6 +2,8 @@ package org.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,19 +19,41 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
-        Object pipeItem = getFile(args[0]);
+        Map<String, IConverter> modules = null;
+        try {
+            modules = ModuleUtil.loadModules(IConverter.class);
+        } catch (ModuleLoadException e) {
+            System.out.println(e.getMessage());
+        }
+
+        Object pipeItem = null;
+
+        String fileDescriptor = args[0];
+        String fileEndingFormat = fileDescriptor.split("\\.")[1];
+        String fileName = fileDescriptor.split("\\.")[0];
+
+        try {
+            pipeItem = modules.get(fileEndingFormat).from(getFile(fileDescriptor));
+        } catch (ProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         for (IConverter filter : converterPipe) {
             try {
-                pipeItem = filter.from(pipeItem.toString());
-                System.out.println(pipeItem);
+                String formatString = filter.to(pipeItem);
+                pipeItem = filter.from(formatString);
             } catch (ProcessingException e) {
                 System.out.println(e.getMessage());
             }
         }
 
-        System.out.println("bye :)");
+        String lastFileType = converterPipe.get(converterPipe.size() - 1).getClass().getAnnotation(ModuleName.class).value();
+        System.out.println(lastFileType);
 
-        System.out.println(converterPipe);
+
+        writeFile(fileName, lastFileType, pipeItem);
+
+        System.out.println("bye :)");
 
         //modules.forEach((key, value) -> System.out.println(key + " : " + value));
     }
@@ -51,5 +75,26 @@ public class Main {
         }
 
         return fileLines;
+    }
+
+    static private void writeFile(String fileName, String fileType, Object fileContent) {
+        try {
+            // Create file
+            File myObj = new File(fileName + "." + fileType);
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            // Write to file
+            FileWriter myWriter = new FileWriter(fileName + "." + fileType);
+            myWriter.write(fileContent.toString());
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 }
