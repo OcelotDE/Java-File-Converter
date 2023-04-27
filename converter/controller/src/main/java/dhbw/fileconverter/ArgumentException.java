@@ -1,4 +1,4 @@
-package org.example;
+package dhbw.fileconverter;
 
 public class ArgumentException extends Exception {
     public ArgumentException(String message) {

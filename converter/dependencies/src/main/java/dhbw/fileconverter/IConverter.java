@@ -1,4 +1,4 @@
-package org.example;
+package dhbw.fileconverter;
 
 public interface IConverter {
     String to(Object input) throws ProcessingException;

@@ -1,4 +1,4 @@
-package org.example;
+package dhbw.fileconverter;
 
 public class ModuleLoadException extends RuntimeException {
     public ModuleLoadException(String message, Exception e) {

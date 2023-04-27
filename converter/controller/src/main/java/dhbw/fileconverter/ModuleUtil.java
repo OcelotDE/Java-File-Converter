@@ -1,4 +1,4 @@
-package org.example;
+package dhbw.fileconverter;
 
 import org.reflections.Configuration;
 import org.reflections.Reflections;
@@ -7,7 +7,6 @@ import org.reflections.util.ConfigurationBuilder;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;

@@ -1,4 +1,4 @@
-package org.example;
+package dhbw.fileconverter;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -6,14 +6,8 @@ import java.util.Map;
 public final class ArgumentUtil {
     private ArgumentUtil() {}
 
-    public static ArrayList<IConverter> parseArguments(String[] args) throws ArgumentException {
+    public static ArrayList<IConverter> parseArguments(String[] args, Map<String, IConverter> modules) throws ArgumentException {
         ArrayList<IConverter> parsedArguments = new ArrayList<>();
-        Map<String, IConverter> modules = null;
-        try {
-            modules = ModuleUtil.loadModules(IConverter.class);
-        } catch (ModuleLoadException e) {
-            System.out.println(e.getMessage());
-        }
 
         if (modules != null) {
             for (int i = 1; i < args.length; i++) {

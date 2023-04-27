@@ -1,7 +1,6 @@
-package org.example;
+package dhbw.fileconverter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
 @ModuleName("yaml")
