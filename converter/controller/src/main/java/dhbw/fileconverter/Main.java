@@ -31,7 +31,6 @@ public class Main {
 
         JsonNode pipeItem;
         String fileDescriptor = args[0];
-        String fileEndingFormat = fileDescriptor.split("\\.")[1];
         String fileName = fileDescriptor.split("\\.")[0];
 
 
