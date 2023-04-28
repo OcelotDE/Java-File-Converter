@@ -34,19 +34,47 @@ public class Main {
         String fileEndingFormat = fileDescriptor.split("\\.")[1];
         String fileName = fileDescriptor.split("\\.")[0];
 
+
+
         // handle the first module in the pipe
-        try {
+        /*try {
             pipeItem = converters.get(fileEndingFormat).from(FileManager.getFile(fileDescriptor), null);
         } catch (ProcessingException e) {
             throw new RuntimeException(e);
+        }*/
+
+        // check if pipe contains at least two modules
+        if (processPipe.size() < 2) {
+            throw new RuntimeException("Pipe must contain at least two modules.");
         }
 
+        // remove the first module from the pipe and save it
+        ProcessStep firstStep = processPipe.get(0);
+        if (!(firstStep.getModule() instanceof IConverter firstConverter)) {
+            throw new RuntimeException("First module in pipe must be a converter.");
+        }
+        processPipe.remove(0);
+
+        // load the first converter module to pipe
+        try {
+            pipeItem = firstConverter.from(FileManager.getFile(fileDescriptor), firstStep.getParameters());
+        } catch (ProcessingException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        // remove the last module from the pipe and save it
         int lastModuleIndex = processPipe.size() - 1;
         ProcessStep lastStep = processPipe.get(lastModuleIndex);
         if (!(lastStep.getModule() instanceof IConverter lastConverter)) {
             throw new RuntimeException("Last module in pipe must be a converter.");
         }
         processPipe.remove(lastModuleIndex);
+
+        // check if pipe contains at least two converter modules
+        if (processPipe.size() == 0) {
+            throw new RuntimeException("Pipe must contain at least two converter modules.");
+        }
 
         // create an iterator for converterPipe
         for (ProcessStep step : processPipe) {
@@ -74,6 +102,7 @@ public class Main {
             }
         }
 
+        // get file ending for last element in pipe
         String lastFileType;
         FileEnding annotation = lastConverter.getClass().getAnnotation(FileEnding.class);
         if (annotation != null) { // if the module has a ModuleName annotation, use that as the file type
@@ -91,7 +120,7 @@ public class Main {
             return;
         }
 
-        FileManager.writeFile(fileName, lastFileType, pipeItemString); // write the file
+        FileManager.writeFile(fileName, lastFileType, pipeItemString); // write output to file
 
         System.out.println("Finished converting given file.");
     }
