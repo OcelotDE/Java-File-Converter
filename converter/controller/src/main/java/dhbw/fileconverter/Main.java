@@ -43,6 +43,10 @@ public class Main {
             throw new RuntimeException(e);
         }*/
 
+        if (processPipe == null) {
+            throw new RuntimeException("No module parameters given.");
+        }
+
         // check if pipe contains at least two modules
         if (processPipe.size() < 2) {
             throw new RuntimeException("Pipe must contain at least two modules.");
@@ -54,6 +58,11 @@ public class Main {
             throw new RuntimeException("First module in pipe must be a converter.");
         }
         processPipe.remove(0);
+
+        // check if pipe contains at least two converter modules
+        if (processPipe.size() == 0) {
+            throw new RuntimeException("Pipe must contain at least two converter modules.");
+        }
 
         // load the first converter module to pipe
         try {
@@ -70,11 +79,6 @@ public class Main {
             throw new RuntimeException("Last module in pipe must be a converter.");
         }
         processPipe.remove(lastModuleIndex);
-
-        // check if pipe contains at least two converter modules
-        if (processPipe.size() == 0) {
-            throw new RuntimeException("Pipe must contain at least two converter modules.");
-        }
 
         // create an iterator for converterPipe
         for (ProcessStep step : processPipe) {

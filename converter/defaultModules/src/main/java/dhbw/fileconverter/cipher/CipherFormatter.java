@@ -91,13 +91,6 @@ public abstract class CipherFormatter implements IFormatter {
     }
 
     protected SecretKeySpec generateSecretKey() {
-        try {
-            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
-            KeySpec keySpec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT, ITERATION_COUNT, SECRET_KEY_LENGTH);
-            SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
-            return new SecretKeySpec(secretKey.getEncoded(), ENCRYPTION_ALGORITHM);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new CipherException(e);
-        }
+        return new SecretKeySpec(SECRET_KEY.getBytes(), ENCRYPTION_ALGORITHM);
     }
 }
