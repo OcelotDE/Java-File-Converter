@@ -19,16 +19,24 @@ public class ArgumentUtilTests {
 
 
         // create whitebox tests for the argument loading
-        String[] args = {"Examples/adresse.json", "-xml", "-json"};
 
+        // load three modules: firstly json, then xml, then json again
+        String[] args = {"Examples/adresse.json", "-json", "-xml", "-json"};
+
+        // create list of process steps to fill
+        List<ProcessStep> steps = null;
         try {
-            List<ProcessStep> steps = ArgumentUtil.parseArguments(args);
-            assertEquals(2, steps.size());
-            assertEquals(XMLConverter.class, steps.get(0).getModule().getClass());
-            assertEquals(JsonConverter.class, steps.get(1).getModule().getClass());
+            // parse arguments to list of process steps
+            steps = ArgumentUtil.parseArguments(args);
         } catch (ArgumentException e) {
             throw new RuntimeException(e);
         }
+
+        // check if the list of process steps is correct
+        assertEquals(3, steps.size());
+        assertEquals(XMLConverter.class, steps.get(0).getModule().getClass());
+        assertEquals(JsonConverter.class, steps.get(1).getModule().getClass());
+
         System.out.println("Test successful.");
     }
 }
