@@ -91,6 +91,9 @@ public abstract class CipherFormatter implements IFormatter {
     }
 
     protected SecretKeySpec generateSecretKey() {
-        return new SecretKeySpec(SECRET_KEY.getBytes(), ENCRYPTION_ALGORITHM);
+        if (SECRET_KEY.length() % 16 != 0) { // AES needs a 16 character long key
+            SECRET_KEY += "x".repeat(16 - SECRET_KEY.length() % 16); // if user didn't enter a 16 character long key, make it 16 characters long
+        }
+        return new SecretKeySpec(SECRET_KEY.getBytes(), ENCRYPTION_ALGORITHM); // generate secret key from user input
     }
 }
