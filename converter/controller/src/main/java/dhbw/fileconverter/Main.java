@@ -12,26 +12,25 @@ public class Main {
         System.out.println("File converter initialized...");
 
         // load converter and formatter modules
-        Map<String, IConverter> converters = null;
+        /*Map<String, IConverter> converters = null;
         Map<String, IFormatter> formatters = null;
         try {
             converters = ModuleUtil.loadModules(IConverter.class);
             formatters = ModuleUtil.loadModules(IFormatter.class);
         } catch (ModuleLoadException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
 
         // parse arguments and get the modules
         List<ProcessStep> processPipe = null;
         try {
-            processPipe = ArgumentUtil.parseArguments(args, converters, formatters);
+            processPipe = ArgumentUtil.parseArguments(args);
         } catch (ArgumentException e) {
             System.out.println(e.getMessage());
         }
 
         JsonNode pipeItem;
         String fileDescriptor = args[0];
-        String fileEndingFormat = fileDescriptor.split("\\.")[1];
         String fileName = fileDescriptor.split("\\.")[0];
 
 

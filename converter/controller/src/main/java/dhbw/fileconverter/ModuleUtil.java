@@ -17,8 +17,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class ModuleUtil {
-    private ModuleUtil() {
+    private static ModuleUtil instance;
+    public Map<String, IConverter> converters;
+    public Map<String, IFormatter> formatters;
+    private ModuleUtil() {}
+
+    // SINGLETON PATTERN
+    public static ModuleUtil GetInstance() {
+        if (instance == null) {
+            instance = new ModuleUtil();
+            try {
+                instance.converters = ModuleUtil.loadModules(IConverter.class);
+                instance.formatters = ModuleUtil.loadModules(IFormatter.class);
+            } catch (ModuleLoadException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return instance;
     }
+    // END SINGLETON PATTERN
 
     public static <T> Map<String, T> loadModules(Class<T> moduleType) throws ModuleLoadException {
         URLClassLoader classLoader = loadJars();

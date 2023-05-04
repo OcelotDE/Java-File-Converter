@@ -19,6 +19,7 @@
         <module>controller</module>
         <module>dependencies</module>
         <module>defaultModules</module>
+        <module>Tests</module>
     </modules>
 
 </project>
