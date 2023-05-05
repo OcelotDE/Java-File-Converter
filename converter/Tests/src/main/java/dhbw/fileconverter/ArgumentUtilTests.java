@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 public class ArgumentUtilTests {
     @Test
     public void testArgumentLoading() {
+        ModuleUtilTests test = new ModuleUtilTests();
+        test.testModuleLoading();
         // load two modules to parse into
         ModuleUtil moduleUtil = ModuleUtil.GetInstance();
         moduleUtil.converters = new HashMap<>();
@@ -21,7 +23,7 @@ public class ArgumentUtilTests {
         // create whitebox tests for the argument loading
 
         // load three modules: firstly json, then xml, then json again
-        String[] args = {"Examples/adresse.json", "-json", "-xml", "-json"};
+        String[] args = {"Examples/adresse.json", "-json", "-xml"};
 
         // create list of process steps to fill
         List<ProcessStep> steps = null;
@@ -34,9 +36,10 @@ public class ArgumentUtilTests {
 
         // check if the list of process steps is correct
         assertEquals(3, steps.size());
-        assertEquals(XMLConverter.class, steps.get(0).getModule().getClass());
-        assertEquals(JsonConverter.class, steps.get(1).getModule().getClass());
+        assertEquals(JsonConverter.class, steps.get(0).getModule().getClass());
+        assertEquals(XMLConverter.class, steps.get(1).getModule().getClass());
+        assertEquals(JsonConverter.class, steps.get(2).getModule().getClass());
 
-        System.out.println("Test successful.");
+        System.out.println("Argument Util Test successful.");
     }
 }

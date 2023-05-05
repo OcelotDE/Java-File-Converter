@@ -31,6 +31,6 @@ public class ModuleUtilTests {
         assertEquals(JsonConverter.class, moduleUtil.converters.get("json").getClass());
         assertEquals(XMLConverter.class, moduleUtil.converters.get("xml").getClass());
 
-        System.out.println("Test successful.");
+        System.out.println("Module Util Test successful.");
     }
 }
