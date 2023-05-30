@@ -25,8 +25,8 @@ public class Main {
         List<ProcessStep> processPipe = null;
         try {
             processPipe = ArgumentUtil.parseArguments(args);
-        } catch (ArgumentException e) {
-            System.out.println(e.getMessage());
+        } catch (ArgumentException argumentException) {
+            System.out.println(argumentException.getMessage());
         }
 
         JsonNode pipeItem;
