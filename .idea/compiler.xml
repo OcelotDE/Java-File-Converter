@@ -17,7 +17,7 @@
       <module name="converter" target="18" />
       <module name="defaultModules" target="18" />
       <module name="dependencies" target="18" />
-      <module name="Tests" target="20" />
+      <module name="Tests" target="19" />
     </bytecodeTargetLevel>
   </component>
 </project>

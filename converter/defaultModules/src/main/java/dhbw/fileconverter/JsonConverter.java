@@ -15,8 +15,8 @@ public class JsonConverter implements IConverter {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
             return mapper.writeValueAsString(input);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 
@@ -24,8 +24,8 @@ public class JsonConverter implements IConverter {
     public JsonNode from(String input, String[] parameters) throws ProcessingException {
         try {
             return mapper.readValue(input, JsonNode.class);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 }

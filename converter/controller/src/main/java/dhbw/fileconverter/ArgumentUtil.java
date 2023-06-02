@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * The ArgumentUtil class provides utility methods for parsing command-line-arguments
- * and extracting process steps for file conversion.
+ * and extracting process steps for file conversion pipeline.
  */
 public final class ArgumentUtil {
     private ArgumentUtil() {} // Private constructor to prevent instantiation of the utility class

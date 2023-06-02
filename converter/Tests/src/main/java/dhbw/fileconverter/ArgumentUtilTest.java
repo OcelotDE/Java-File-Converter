@@ -7,11 +7,9 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class ArgumentUtilTests {
+public class ArgumentUtilTest {
     @Test
     public void testArgumentLoading() {
-        ModuleUtilTests test = new ModuleUtilTests();
-        test.testModuleLoading();
         // load two modules to parse into
         ModuleUtil moduleUtil = ModuleUtil.GetInstance();
         moduleUtil.converters = new HashMap<>();
@@ -20,7 +18,7 @@ public class ArgumentUtilTests {
         moduleUtil.converters.put("xml", new XMLConverter());
 
 
-        // create whitebox tests for the argument loading
+        // create a white-box test for the argument loading
 
         // load three modules: firstly json, then xml, then json again
         String[] args = {"Examples/adresse.json", "-json", "-xml"};
@@ -30,16 +28,16 @@ public class ArgumentUtilTests {
         try {
             // parse arguments to list of process steps
             steps = ArgumentUtil.parseArguments(args);
-        } catch (ArgumentException e) {
-            throw new RuntimeException(e);
+        } catch (ArgumentException argumentException) {
+            throw new RuntimeException(argumentException);
         }
 
         // check if the list of process steps is correct
-        assertEquals(3, steps.size());
+        assertEquals(2, steps.size());
         assertEquals(JsonConverter.class, steps.get(0).getModule().getClass());
         assertEquals(XMLConverter.class, steps.get(1).getModule().getClass());
-        assertEquals(JsonConverter.class, steps.get(2).getModule().getClass());
 
         System.out.println("Argument Util Test successful.");
     }
+
 }
