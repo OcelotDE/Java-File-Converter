@@ -11,16 +11,6 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("File converter initialized...");
 
-        // load converter and formatter modules
-        /*Map<String, IConverter> converters = null;
-        Map<String, IFormatter> formatters = null;
-        try {
-            converters = ModuleUtil.loadModules(IConverter.class);
-            formatters = ModuleUtil.loadModules(IFormatter.class);
-        } catch (ModuleLoadException e) {
-            System.out.println(e.getMessage());
-        }*/
-
         // parse arguments and get the modules
         List<ProcessStep> processPipe = null;
         try {
@@ -31,16 +21,11 @@ public class Main {
 
         JsonNode pipeItem;
         String fileDescriptor = args[0];
-        String fileName = fileDescriptor.split("\\.")[0];
+        String[] dotStrings = fileDescriptor.split("\\.");
+        String pathString = dotStrings[dotStrings.length - 2];
+        String fileName = pathString.substring(pathString.lastIndexOf("/") + 1);
 
-
-
-        // handle the first module in the pipe
-        /*try {
-            pipeItem = converters.get(fileEndingFormat).from(FileManager.getFile(fileDescriptor), null);
-        } catch (ProcessingException e) {
-            throw new RuntimeException(e);
-        }*/
+        System.out.println("File name: " + fileName);
 
         if (processPipe == null) {
             throw new RuntimeException("No module parameters given.");
