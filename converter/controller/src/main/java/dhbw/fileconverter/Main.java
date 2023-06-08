@@ -32,6 +32,11 @@ public class Main {
         String fileDescriptor = args[0];
         String[] dotStrings = fileDescriptor.split("\\.");
         String pathString = dotStrings[dotStrings.length - 2];
+
+        if (pathString.contains("\\")) {
+            pathString = pathString.replace("\\", "/");
+        }
+
         String fileName = pathString.substring(pathString.lastIndexOf("/") + 1);
     
 
