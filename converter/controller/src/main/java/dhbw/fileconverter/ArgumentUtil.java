@@ -1,9 +1,7 @@
 package dhbw.fileconverter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The ArgumentUtil class provides utility methods for parsing command-line-arguments

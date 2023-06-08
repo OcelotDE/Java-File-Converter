@@ -2,10 +2,7 @@ package dhbw.fileconverter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The main method is the entry point for the file converter application.

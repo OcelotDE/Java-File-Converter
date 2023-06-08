@@ -11,17 +11,18 @@ import dhbw.fileconverter.ProcessingException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 
+/**
+ * Abstract class representing a Cipher Formatter for file conversion.
+ * Implements the IFormatter interface.
+ * Provides encryption and decryption capabilities using AES cipher.
+ */
 public abstract class CipherFormatter implements IFormatter {
+
     protected ObjectMapper mapper = new ObjectMapper();
     protected static final String ENCRYPTION_ALGORITHM = "AES";
     protected static final String SECRET_KEY_ALGORITHM = "PBKDF2WithHmacSHA256";
@@ -31,6 +32,15 @@ public abstract class CipherFormatter implements IFormatter {
     protected static String SECRET_KEY = "dhbw";
     protected static final byte[] SALT = new byte[] { 0x1a, 0x23, 0x45, 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd, (byte) 0xef };
 
+    /**
+     * Converts the input JsonNode to a cipher-transformed JsonNode using the provided secret key.
+     * Supports transformation for objects, arrays, and textual values.
+     *
+     * @param input      The input JsonNode to be transformed.
+     * @param parameters An array of parameters with the secret key as the first element.
+     * @return The transformed JsonNode.
+     * @throws ProcessingException if no secret key is provided or an exception occurs during the transformation.
+     */
     @Override
     public JsonNode to(JsonNode input, String[] parameters) throws ProcessingException {
         if (parameters.length == 0) {
@@ -57,13 +67,37 @@ public abstract class CipherFormatter implements IFormatter {
         return input;
     }
 
+    /**
+     * Converts the input JsonNode back to its original form without any transformation.
+     *
+     * @param input      The input JsonNode to be converted.
+     * @param parameters An array of parameters (not used in this method).
+     * @return The original input JsonNode.
+     */
     @Override
     public JsonNode from(JsonNode input, String[] parameters) {
         return input;
     }
 
+    /**
+     * Transforms the input string using the specified cipher and secret key.
+     * This method needs to be implemented by concrete subclasses.
+     *
+     * @param input  The input string to be transformed.
+     * @param cipher The Cipher object used for transformation.
+     * @param key    The SecretKey used for encryption/decryption.
+     * @return The transformed string.
+     */
     protected abstract String transform(String input, Cipher cipher, SecretKey key);
 
+    /**
+     * Transforms the fields of an ObjectNode recursively using the specified cipher and secret key.
+     *
+     * @param object The ObjectNode whose fields are to be transformed.
+     * @param cipher The Cipher object used for transformation.
+     * @param key    The SecretKey used for encryption/decryption.
+     * @return The transformed ObjectNode.
+     */
     protected ObjectNode transformObject(ObjectNode object, Cipher cipher, SecretKey key) {
         object.fields().forEachRemaining(field -> {
             JsonNode value = field.getValue();
@@ -78,6 +112,14 @@ public abstract class CipherFormatter implements IFormatter {
         return object;
     }
 
+    /**
+     * Transforms the elements of an ArrayNode recursively using the specified cipher and secret key.
+     *
+     * @param array  The ArrayNode whose elements are to be transformed.
+     * @param cipher The Cipher object used for transformation.
+     * @param key    The SecretKey used for encryption/decryption.
+     * @return The transformed ArrayNode.
+     */
     protected ArrayNode transformArray(ArrayNode array, Cipher cipher, SecretKey key) {
         return StreamSupport.stream(array.spliterator(), false).map(node -> {
             if (node.isTextual()) {
@@ -90,10 +132,16 @@ public abstract class CipherFormatter implements IFormatter {
         }).collect(Collector.of(() -> mapper.createArrayNode(), ArrayNode::add, ArrayNode::addAll));
     }
 
+    /**
+     * Generates a secret key using the provided SECRET_KEY or pads it if necessary.
+     * The generated secret key is based on the ENCRYPTION_ALGORITHM.
+     *
+     * @return The SecretKeySpec object representing the generated secret key.
+     */
     protected SecretKeySpec generateSecretKey() {
         if (SECRET_KEY.length() % 16 != 0) { // AES needs a 16 character long key
-            SECRET_KEY += "x".repeat(16 - SECRET_KEY.length() % 16); // if user didn't enter a 16 character long key, make it 16 characters long
+            SECRET_KEY += "x".repeat(16 - SECRET_KEY.length() % 16); // If the key is not 16 characters long, pad it
         }
-        return new SecretKeySpec(SECRET_KEY.getBytes(), ENCRYPTION_ALGORITHM); // generate secret key from user input
+        return new SecretKeySpec(SECRET_KEY.getBytes(), ENCRYPTION_ALGORITHM); // Generate secret key from user input
     }
 }
