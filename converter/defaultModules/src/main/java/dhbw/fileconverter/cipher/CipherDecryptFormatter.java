@@ -15,9 +15,9 @@ public class CipherDecryptFormatter extends CipherFormatter {
             cipher.init(Cipher.DECRYPT_MODE, key);
             byte[] decodedInput = Base64.getDecoder().decode(input);
             return new String(cipher.doFinal(decodedInput));
-        } catch (InvalidKeyException e) {
-            throw new CipherException(e);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
+        } catch (InvalidKeyException invalidKeyException) {
+            throw new CipherException(invalidKeyException);
+        } catch (BadPaddingException | IllegalBlockSizeException exception) {
             return input;
         }
     }

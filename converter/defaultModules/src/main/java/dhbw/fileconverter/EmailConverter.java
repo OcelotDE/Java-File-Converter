@@ -14,17 +14,17 @@ public class EmailConverter implements IConverter {
     private final ObjectMapper mapper = new ObjectMapper();
     @Override
     public String to(JsonNode input, String[] parameters) throws ProcessingException {
-        // Create an array node to store the email addresses.
+        // Create an array node to store the email addresses
         ArrayNode emails = mapper.createArrayNode();
 
-        // Recursively iterate over the input node and add any email addresses to the array node.
+        // Recursively iterate over the input node and add any email addresses to the array node
         filterEmails(input, emails);
 
-        // Return the array node as a string.
+        // Return the array node as a string
         try {
             return mapper.writeValueAsString(emails);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 
@@ -32,8 +32,8 @@ public class EmailConverter implements IConverter {
     public JsonNode from(String input, String[] parameters) throws ProcessingException {
         try {
             return mapper.readValue(input, JsonNode.class);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 

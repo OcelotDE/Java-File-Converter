@@ -16,9 +16,9 @@ public class CipherEncryptFormatter extends CipherFormatter {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             byte[] encryptedBytes = cipher.doFinal(value.getBytes());
             return Base64.getEncoder().encodeToString(encryptedBytes);
-        } catch (InvalidKeyException e) {
-            throw new CipherException(e);
-        } catch (BadPaddingException | IllegalBlockSizeException e) {
+        } catch (InvalidKeyException invalidKeyException) {
+            throw new CipherException(invalidKeyException);
+        } catch (BadPaddingException | IllegalBlockSizeException exception) {
             return value;
         }
     }
