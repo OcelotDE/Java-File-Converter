@@ -131,7 +131,4 @@ public class JSONFromTest {
 
         System.out.println("testJSONConverter() successful");
     }
-
-    // test timeout
-
 }
