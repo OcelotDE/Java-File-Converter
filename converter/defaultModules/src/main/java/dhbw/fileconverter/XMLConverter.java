@@ -19,8 +19,8 @@ public class XMLConverter implements IConverter {
         }
         try {
             return mapper.writer().withRootName("root").writeValueAsString(input);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 
@@ -33,8 +33,8 @@ public class XMLConverter implements IConverter {
                 return child;
             }
             return node;
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 }

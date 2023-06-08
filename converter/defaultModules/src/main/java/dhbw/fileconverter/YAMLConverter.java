@@ -14,8 +14,8 @@ public class YAMLConverter implements IConverter {
     public String to(JsonNode input, String[] parameters) throws ProcessingException {
         try {
             return mapper.writeValueAsString(input);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 
@@ -23,8 +23,8 @@ public class YAMLConverter implements IConverter {
     public JsonNode from(String input, String[] parameters) throws ProcessingException {
         try {
             return mapper.readValue(input, JsonNode.class);
-        } catch (JsonProcessingException e) {
-            throw new ProcessingException(e);
+        } catch (JsonProcessingException jsonProcessingException) {
+            throw new ProcessingException(jsonProcessingException);
         }
     }
 }

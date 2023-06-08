@@ -16,6 +16,9 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for managing modules in a file converter application.
+ */
 public final class ModuleUtil {
     private static ModuleUtil instance;
     public Map<String, IConverter> converters;
@@ -23,6 +26,12 @@ public final class ModuleUtil {
     private ModuleUtil() {}
 
     // SINGLETON PATTERN
+
+    /**
+     * Retrieves the singleton instance of the ModuleUtil class
+     *
+     * @return ModuleUtil instance
+     */
     public static ModuleUtil GetInstance() {
         if (instance == null) {
             instance = new ModuleUtil();
@@ -37,6 +46,14 @@ public final class ModuleUtil {
     }
     // END SINGLETON PATTERN
 
+    /**
+     * Loads modules of a specific type and returns them as a map
+     *
+     * @param moduleType The type of modules to load
+     * @param <T>        module type
+     * @return           a map of module names to module instances
+     * @throws ModuleLoadException if an error occurs while loading the modules
+     */
     public static <T> Map<String, T> loadModules(Class<T> moduleType) throws ModuleLoadException {
         URLClassLoader classLoader = loadJars();
         Configuration config = new ConfigurationBuilder().addClassLoaders(classLoader).setUrls(ClasspathHelper.forClassLoader(classLoader));
@@ -55,12 +72,18 @@ public final class ModuleUtil {
                         Constructor<? extends T> constructor = module.getConstructor();
                         return constructor.newInstance();
                     } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                             InvocationTargetException e) {
-                        throw new ModuleLoadException("Could not instantiate module: " + module.getSimpleName(), e);
+                             InvocationTargetException operationException) {
+                        throw new ModuleLoadException("Could not instantiate module: " + module.getSimpleName(), operationException);
                     }
                 }));
     }
 
+    /**
+     * Loads JAR files from the "modules" directory and creates a URLClassLoader with the JAR file URLs.
+     *
+     * @return The URLClassLoader containing the loaded JAR files.
+     * @throws ModuleLoadException if an error occurs while loading the JAR files.
+     */
     private static URLClassLoader loadJars() {
         File dir = new File("modules");
 
@@ -76,17 +99,15 @@ public final class ModuleUtil {
         URL[] urls = Arrays.stream(files).map(file -> {
             try {
                 return file.toURI().toURL();
-            } catch (MalformedURLException e) {
-                throw new ModuleLoadException("Could not read module file: " + file.getName(), e);
+            } catch (MalformedURLException malformedURLException) {
+                throw new ModuleLoadException("Could not read module file: " + file.getName(), malformedURLException);
             }
         }).toArray(URL[]::new);
 
         try {
             return new URLClassLoader(urls, ModuleUtil.class.getClassLoader());
-        } catch (SecurityException | NullPointerException e) {
-            throw new ModuleLoadException("Could not read module files", e);
+        } catch (SecurityException | NullPointerException exception) {
+            throw new ModuleLoadException("Could not read module files", exception);
         }
-
-
     }
 }

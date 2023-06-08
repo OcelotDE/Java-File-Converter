@@ -1,18 +1,16 @@
 package dhbw.fileconverter;
 
-import dhbw.fileconverter.*;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class ModuleUtilTests {
+public class ModuleUtilTest {
     @Test
     public void testModuleLoading() {
-        // create whitebox tests for the module loading
+        // create whitebox test for the module loading
         ModuleUtil moduleUtil = ModuleUtil.GetInstance();
 
         // Without manually setting the converters and formatters, they should be null, since there is no modules folder

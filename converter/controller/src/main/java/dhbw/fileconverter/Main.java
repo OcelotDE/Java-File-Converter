@@ -7,16 +7,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The main method is the entry point for the file converter application.
+ * It parses the command-line arguments,
+ * sets up the conversion pipeline
+ * and performs the conversion.
+ *
+ * @param \args These are the command line arguments passed to the application
+ *              and these specify the conversion modules to use
+ */
 public class Main {
     public static void main(String[] args) {
         System.out.println("File converter initialized...");
-
+      
         // parse arguments and get the modules
         List<ProcessStep> processPipe = null;
         try {
             processPipe = ArgumentUtil.parseArguments(args);
-        } catch (ArgumentException e) {
-            System.out.println(e.getMessage());
+        } catch (ArgumentException argumentException) {
+            System.out.println(argumentException.getMessage());
         }
 
         JsonNode pipeItem;
@@ -24,8 +33,7 @@ public class Main {
         String[] dotStrings = fileDescriptor.split("\\.");
         String pathString = dotStrings[dotStrings.length - 2];
         String fileName = pathString.substring(pathString.lastIndexOf("/") + 1);
-
-        System.out.println("File name: " + fileName);
+    
 
         if (processPipe == null) {
             throw new RuntimeException("No module parameters given.");
@@ -47,8 +55,8 @@ public class Main {
         // load the first converter module to pipe
         try {
             pipeItem = firstConverter.from(FileManager.getFile(fileDescriptor), firstStep.getParameters());
-        } catch (ProcessingException e) {
-            System.out.println(e.getMessage());
+        } catch (ProcessingException processingException) {
+            System.out.println(processingException.getMessage());
             return;
         }
 
@@ -69,8 +77,8 @@ public class Main {
 
                     pipeItem = converter.from(formatString, step.getParameters());
 
-                } catch (ProcessingException e) {
-                    System.out.println(e.getMessage());
+                } catch (ProcessingException processingException) {
+                    System.out.println(processingException.getMessage());
                     return;
                 }
             } else if (module instanceof IFormatter formatter) {
@@ -79,8 +87,8 @@ public class Main {
 
                     pipeItem = formatter.from(format, step.getParameters());
 
-                } catch (ProcessingException e) {
-                    System.out.println(e.getMessage());
+                } catch (ProcessingException processingException) {
+                    System.out.println(processingException.getMessage());
                     return;
                 }
             }
@@ -95,12 +103,12 @@ public class Main {
             lastFileType = lastConverter.getClass().getSimpleName().toLowerCase();
         }
 
-        // convert pipe item to string
+        // try to convert pipe item to string
         String pipeItemString = null;
         try {
             pipeItemString = lastConverter.to(pipeItem, lastStep.getParameters());
-        } catch (ProcessingException e) {
-            System.out.println(e.getMessage());
+        } catch (ProcessingException processingException) {
+            System.out.println(processingException.getMessage());
             return;
         }
 

@@ -50,8 +50,8 @@ public abstract class CipherFormatter implements IFormatter {
             } else if (input.isTextual()) {
                 return new TextNode(transform(input.asText(), cipher, secretKeySpec));
             }
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | CipherException e) {
-            throw new ProcessingException(e);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | CipherException exception) {
+            throw new ProcessingException(exception);
         }
 
         return input;
